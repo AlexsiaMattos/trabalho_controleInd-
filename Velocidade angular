@@ -1,0 +1,48 @@
+int voltas = 0; // Contador de pulsos do encoder
+float rad_s = 0; // Velocidade angular em rad/s
+
+const int pulsesPerRevolution = 20; // Número de pulsos por revolução do encoder
+const float pi = 3.14159;
+
+const int IN1 = 9; // Pino de direção 1 do motor (Controla velocidade)
+const int IN2 = 10; // Pino de direção 2 do motor
+const int ENA = 8;  // Pino de controle da ponte H
+
+unsigned long tempo = millis();
+
+void setup() {
+  // Configura os pinos
+  pinMode(2, INPUT);   // Pino do encoder
+  pinMode(IN1, OUTPUT); // Pino de direção 1 (CONTROLA VELOCIDADE)
+  pinMode(IN2, OUTPUT); // Pino de direção 2
+  pinMode(ENA, OUTPUT); // Pino que liga ponte H
+  
+  Serial.begin(9600);
+  
+  // Configura interrupção no pino 2
+  attachInterrupt(digitalPinToInterrupt(2), motor, RISING);
+
+  // Liga o motor em uma direção e ajusta a velocidade
+  analogWrite(IN1, 255); // Define direção
+  digitalWrite(IN2, LOW);  // Define direção oposta
+  analogWrite(ENA, 255);   // Define velocidade (255 = máximo)
+
+}
+void loop() {
+  // Atualiza a cada segundo
+  if (millis() - tempo >= 1000) {
+    rad_s = (voltas/6)* 2 * pi;
+
+    
+    //Serial.print("Velocidade Angular (rad/s): ");
+    Serial.println(rad_s);
+
+    
+    voltas = 0;
+    tempo = millis();
+  }
+}
+
+void motor(){
+  voltas++;
+}
